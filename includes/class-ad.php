@@ -69,7 +69,12 @@ class ATWPA_Ad extends CPT_Core {
 		add_action('save_post_atwpa-ad', [$this, 'save_post']);
 	}
 
-	function save_post($post_id ) {
+	/**
+	 * @param $post_id
+     *
+     * saving meta values
+	 */
+	public function save_post($post_id ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
 		if ( ! isset( $_POST['ad_url_nonce'] ) || ! wp_verify_nonce( $_POST['ad_url_nonce'], '_ad_url_nonce' ) ) return;
 		if ( ! current_user_can( 'edit_post', $post_id ) ) return;
@@ -83,8 +88,14 @@ class ATWPA_Ad extends CPT_Core {
 			
 	}
 
-
-	function image_size_get_meta( $value ) {
+	/**
+	 * @param $value
+	 *
+	 * @return bool|mixed|string
+     *
+     * get image size value
+	 */
+	public function image_size_get_meta( $value ) {
 		global $post;
 	
 		$field = get_post_meta( $post->ID, $value, true );
@@ -95,7 +106,10 @@ class ATWPA_Ad extends CPT_Core {
 		}
 	}
 
-	function add_meta_box(){
+	/**
+	 * register metabox
+	 */
+	public function add_meta_box(){
 		add_meta_box(
 			'ad_url-ad-url',
 			__( 'AD Url', 'ad_url' ),
@@ -107,7 +121,12 @@ class ATWPA_Ad extends CPT_Core {
 		
 	}
 
-	function field_html($post){
+	/**
+	 * @param $post
+     *
+     * add markup for fields
+	 */
+	public function field_html($post){
 		wp_nonce_field( '_ad_url_nonce', 'ad_url_nonce' ); ?>
 
 		<p>

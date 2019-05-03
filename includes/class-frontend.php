@@ -6,13 +6,14 @@
  * @package AdThrive_WP_Adserver
  */
 
-/**
- * Endpoint class.
- *
- * @since   0.0.0
- * @package AdThrive_WP_Adserver
- */
+
 if ( class_exists( 'WP_REST_Controller' ) ) {
+	/**
+	 * Endpoint class.
+	 *
+	 * @since   0.0.0
+	 * @package AdThrive_WP_Adserver
+	 */
 	class ATWPA_Frontend extends WP_REST_Controller {
 		/**
 		 * Parent plugin class.

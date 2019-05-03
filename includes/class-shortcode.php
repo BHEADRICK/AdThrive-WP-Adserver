@@ -43,8 +43,14 @@ class ATWPA_Shortcode {
 		add_action('wp_enqueue_scripts', [$this, 'scripts']);
 	}
 
+	/**
+	 * enqueue scripts
+	 *
+	 * @since 0.0.0
+	 */
 	public function scripts(){
-		wp_register_script(get_class($this->plugin). '_ad_script', $this->plugin->url . 'assets/js/ads.js', ['jquery'], null, true );
+
+		wp_register_script(get_class($this->plugin). '_ad_script', $this->plugin->url . 'assets/js/ads.js', ['jquery'], '1.0', true );
 		$settings = [
 
 			'root' => esc_url_raw( rest_url('adthrive-wp-adserver/v1') ),
@@ -53,6 +59,14 @@ class ATWPA_Shortcode {
 		];
 		wp_localize_script(get_class($this->plugin). '_ad_script', get_class($this->plugin), $settings);
 	}
+
+	/**
+	 * content for shortcode to render ads
+	 *
+	 * @param $atts
+	 *
+	 * @return string
+	 */
 	public function shortcode($atts){
 		wp_enqueue_script(get_class($this->plugin). '_ad_script');
 		if(isset($atts['zone'])){
