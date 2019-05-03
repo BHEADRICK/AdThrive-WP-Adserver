@@ -43,8 +43,8 @@ class ATWPA_Ad extends CPT_Core {
 		// First parameter should be an array with Singular, Plural, and Registered name.
 		parent::__construct(
 			array(
-				esc_html__( 'AdThrive WP Adserver Ad', $this->plugin->slug ),
-				esc_html__( 'AdThrive WP Adserver Ads', $this->plugin->slug ),
+				esc_html__( 'AdThrive WP Adserver Ad', 'adthrive-wp-adserver' ),
+				esc_html__( 'AdThrive WP Adserver Ads', 'adthrive-wp-adserver' ),
 				'atwpa-ad',
 			),
 			array(
@@ -70,9 +70,10 @@ class ATWPA_Ad extends CPT_Core {
 	}
 
 	/**
-	 * @param $post_id
+     * Saving meta values
      *
-     * saving meta values
+	 * @param $post_id int Post ID
+     *
 	 */
 	public function save_post($post_id ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
@@ -89,11 +90,11 @@ class ATWPA_Ad extends CPT_Core {
 	}
 
 	/**
-	 * @param $value
+     * Get image size value
+	 * @param $value string existing value
 	 *
 	 * @return bool|mixed|string
      *
-     * get image size value
 	 */
 	public function image_size_get_meta( $value ) {
 		global $post;
@@ -107,12 +108,12 @@ class ATWPA_Ad extends CPT_Core {
 	}
 
 	/**
-	 * register metabox
+	 * Register metabox
 	 */
 	public function add_meta_box(){
 		add_meta_box(
 			'ad_url-ad-url',
-			__( 'AD Url', 'ad_url' ),
+			__( 'AD Url', 'adthrive-wp-adserver' ),
 			[$this, 'field_html'],
 			'atwpa-ad',
 			'normal',
@@ -122,9 +123,11 @@ class ATWPA_Ad extends CPT_Core {
 	}
 
 	/**
-	 * @param $post
+	 * Add markup for fields
      *
-     * add markup for fields
+     * @param $post
+     *
+     *
 	 */
 	public function field_html($post){
 		wp_nonce_field( '_ad_url_nonce', 'ad_url_nonce' ); ?>

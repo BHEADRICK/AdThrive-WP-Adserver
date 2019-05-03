@@ -44,7 +44,7 @@ class ATWPA_Shortcode {
 	}
 
 	/**
-	 * enqueue scripts
+	 * Enqueue scripts
 	 *
 	 * @since 0.0.0
 	 */
@@ -61,9 +61,9 @@ class ATWPA_Shortcode {
 	}
 
 	/**
-	 * content for shortcode to render ads
+	 * Content for shortcode to render ads
 	 *
-	 * @param $atts
+	 * @param $atts array Shortcode parameters
 	 *
 	 * @return string
 	 */
