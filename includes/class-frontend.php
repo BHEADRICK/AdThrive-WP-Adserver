@@ -127,7 +127,20 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 *
 		 * @param  WP_REST_Request $request Full details about the request.
 		 */
-		public function get_item( $request ) {}
+		public function get_item( $request ) {
+			$zone_id = $request->get_param('id');
+			$ads = get_posts([
+				'posts_per_page'=>-1,
+				'post_type'=>'atwpa-ad',
+				'orderby'=>'rand',
+				'tax_query'=>[
+					'taxonomy'=>'atwpa-zone',
+					'field'=>'term_id',
+					'terms'=>$zone_id
+				]
+			]);
+
+		}
 
 		/**
 		 * Permission check for getting item.
@@ -136,7 +149,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 *
 		 * @param  WP_REST_Request $request Full details about the request.
 		 */
-		public function get_item_permissions_check( $request ) {}
+		public function get_item_permissions_check( $request ) {
+			return true;
+		}
 
 		/**
 		 * Update item.
