@@ -53,7 +53,7 @@ class ATWPA_Ad extends CPT_Core {
 
 					'thumbnail',
 				),
-				'menu_icon' => 'dashicons-admin-post', // https://developer.wordpress.org/resource/dashicons/
+				'menu_icon' => 'dashicons-media-document', // https://developer.wordpress.org/resource/dashicons/
 				'public'    => true,
 			)
 		);
@@ -74,8 +74,25 @@ class ATWPA_Ad extends CPT_Core {
 		if ( ! isset( $_POST['ad_url_nonce'] ) || ! wp_verify_nonce( $_POST['ad_url_nonce'], '_ad_url_nonce' ) ) return;
 		if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
-		if ( isset( $_POST['atwpa_ad_url'] ) )
+		if ( isset( $_POST['atwpa_ad_url'] ) ){
 			update_post_meta( $post_id, '_atwpa_ad_url', esc_attr( $_POST['atwpa_ad_url'] ) );
+		}
+		if( isset( $_POST['atwpa_image_size']) ){
+			update_post_meta( $post_id, '_atwpa_image_size', esc_attr( $_POST['atwpa_image_size'] ) );
+		}
+			
+	}
+
+
+	function image_size_get_meta( $value ) {
+		global $post;
+	
+		$field = get_post_meta( $post->ID, $value, true );
+		if ( ! empty( $field ) ) {
+			return is_array( $field ) ? stripslashes_deep( $field ) : stripslashes( wp_kses_decode_entities( $field ) );
+		} else {
+			return false;
+		}
 	}
 
 	function add_meta_box(){
@@ -87,15 +104,37 @@ class ATWPA_Ad extends CPT_Core {
 			'normal',
 			'default'
 		);
+		
 	}
 
 	function field_html($post){
 		wp_nonce_field( '_ad_url_nonce', 'ad_url_nonce' ); ?>
 
 		<p>
-		<label for="ad_url_ad_url"><?php _e( 'Ad URL', $this->plugin->slug ); ?></label><br>
-		<input type="text" name="atwpa_ad_url" id="ad_url_ad_url" value="<?php echo get_post_meta($post->ID, '_atwpa_ad_url', true); ?>">
-		</p><?php
+			<label for="ad_url_ad_url"><?php _e( 'Ad URL', $this->plugin->slug ); ?></label><br>
+			<input type="text" name="atwpa_ad_url" id="ad_url_ad_url" value="<?php echo get_post_meta($post->ID, '_atwpa_ad_url', true); ?>">
+		</p>
+
+		<p>Select the image size.</p>
+		<p>
+		<?php 
+			$atwpa_image_sizes = get_intermediate_image_sizes();
+		?>
+			<label for="atwpa_image_size"><?php _e( 'Image Size', 'image_size' ); ?></label><br>
+			<select name="atwpa_image_size" id="atwpa_image_size">
+			<option value="" <?php echo (get_post_meta($post->ID, '_atwpa_image_size', true) === '' ) ? 'selected' : '' ?>></option>
+			<?php 
+			foreach($atwpa_image_sizes as $image_size){
+				$size_name = ucwords($image_size);
+				$selected = '';
+				if( get_post_meta($post->ID, '_atwpa_image_size', true) === $image_size){
+					$selected = 'selected';
+				}
+				echo '<option value="' . $image_size . '"' . $selected . '>' . $size_name .  '</option>';
+			} ?>
+			</select>
+		</p>
+		<?php
 	}
 
 
