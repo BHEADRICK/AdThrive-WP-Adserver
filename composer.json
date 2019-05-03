@@ -1,0 +1,20 @@
+{
+    "name": "atl/ad-thrive-wp-adserver",
+    "description": "plugin for ads",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "ATL Agency",
+            "email": "andrewkdevlin@gmail.com"
+        }
+    ],
+    "scripts":{
+        "lint": [
+            "vendor/bin/phpcs . --standard=WPScholar"
+        ]
+    },
+    "require": {
+        "wpscholar/phpcs-standards-wpscholar": "^1.0"
+    }
+}

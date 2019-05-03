@@ -1,0 +1,19 @@
+{
+  "name": "wpscholar/phpcs-standards-wpscholar",
+  "description": "PHP Code Sniffer Standards for WP Scholar",
+  "type": "phpcodesniffer-standard",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Micah Wood",
+      "email": "micah@wpscholar.com"
+    }
+  ],
+  "require": {
+    "squizlabs/php_codesniffer": "@stable",
+    "phpcompatibility/php-compatibility": "@stable",
+    "wp-coding-standards/wpcs": "@stable",
+    "dealerdirect/phpcodesniffer-composer-installer": "@stable",
+    "phpcompatibility/phpcompatibility-wp": "@stable"
+  }
+}
