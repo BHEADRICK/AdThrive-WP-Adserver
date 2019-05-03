@@ -341,6 +341,7 @@ final class AdThrive_WP_Adserver {
 			case 'url':
 			case 'path':
 			case 'frontend':
+			case 'slug':
 			case 'ad':
 			case 'zone':
 			case 'shortcode':
