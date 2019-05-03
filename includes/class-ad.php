@@ -77,6 +77,7 @@ class ATWPA_Ad extends CPT_Core {
 		if ( isset( $_POST['atwpa_ad_url'] ) ){
 			update_post_meta( $post_id, '_atwpa_ad_url', esc_attr( $_POST['atwpa_ad_url'] ) );
 		}
+
 		if( isset( $_POST['atwpa_image_size']) ){
 			update_post_meta( $post_id, '_atwpa_image_size', esc_attr( $_POST['atwpa_image_size'] ) );
 		}
@@ -110,33 +111,38 @@ class ATWPA_Ad extends CPT_Core {
 	function field_html($post){
 		wp_nonce_field( '_ad_url_nonce', 'ad_url_nonce' ); ?>
 		<?php 
-		if(!has_post_thumbnail($post)){
-			echo '<p><strong style="color:maroon;">Please add a featured image.</strong></p>';
-		}
+			if(!has_post_thumbnail($post)){
+				echo '<p><strong style="color:maroon;">Please add a featured image.</strong></p>';
+			}
 		?>
+		
 		<p>
 			<label for="ad_url_ad_url"><?php _e( 'Ad URL', $this->plugin->slug ); ?></label><br>
 			<input type="text" name="atwpa_ad_url" id="ad_url_ad_url" value="<?php echo get_post_meta($post->ID, '_atwpa_ad_url', true); ?>">
+			<?php 
+			if(!wp_http_validate_url(get_post_meta($post->ID, '_atwpa_ad_url', true) ) ){
+				echo '<span><strong style="color:maroon;">Please add a valid url.</strong></span>';
+			}
+		?>
 		</p>
 
 		<p>Select the image size.</p>
+
 		<p>
-		<?php 
-			$atwpa_image_sizes = get_intermediate_image_sizes();
-		?>
+		<?php $atwpa_image_sizes = get_intermediate_image_sizes(); ?>
 		
 			<label for="atwpa_image_size"><?php _e( 'Image Size', 'image_size' ); ?></label><br>
 			<select name="atwpa_image_size" id="atwpa_image_size">
-			<option value="" <?php echo (get_post_meta($post->ID, '_atwpa_image_size', true) === '' ) ? 'selected' : '' ?>></option>
-			<?php 
-			foreach($atwpa_image_sizes as $image_size){
-				$size_name = ucwords($image_size);
-				$selected = '';
-				if( get_post_meta($post->ID, '_atwpa_image_size', true) === $image_size){
-					$selected = 'selected';
-				}
-				echo '<option value="' . $image_size . '"' . $selected . '>' . $size_name .  '</option>';
-			} ?>
+				<option value="" <?php echo (get_post_meta($post->ID, '_atwpa_image_size', true) === '' ) ? 'selected' : '' ?>></option>
+				<?php 
+				foreach($atwpa_image_sizes as $image_size){
+					$size_name = ucwords($image_size);
+					$selected = '';
+					if( get_post_meta($post->ID, '_atwpa_image_size', true) === $image_size){
+						$selected = 'selected';
+					}
+					echo '<option value="' . $image_size . '"' . $selected . '>' . $size_name .  '</option>';
+				} ?>
 			</select>
 		</p>
 		<?php
