@@ -57,6 +57,8 @@ class ATWPA_Shortcode {
 		wp_enqueue_script(get_class($this->plugin). '_ad_script');
 		if(isset($atts['zone'])){
 
+			$size = isset($atts['size'])?$atts['size']:'';
+
 			if(is_numeric($atts['zone'])){
 				$zone_id = $atts['zone'];
 			}else{
@@ -65,7 +67,7 @@ class ATWPA_Shortcode {
 				$zone_id = $zone->term_id;
 			}
 
-			return "<div class='adthrive-ad' data-zone-id='$zone_id'></div>";
+			return "<div class='adthrive-ad' data-zone-id='$zone_id' data-size='$size'></div>";
 		}
 
 	}
