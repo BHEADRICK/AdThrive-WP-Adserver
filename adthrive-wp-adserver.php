@@ -1,415 +1,429 @@
 <?php
-/**
- * Plugin Name: AdThrive WP Adserver
- * Plugin URI:  https://catmanstudios.com
- * Description: A go-to solution fo rserving ads in WordPress
- * Version:     1.0.0
- * Author:      Bryan Headrick
- * Author URI:  https://catmanstudios.com
- * Donate link: https://catmanstudios.com
- * License:     GPLv2
- * Text Domain: adthrive-wp-adserver
- * Domain Path: /languages
- *
- * @link    https://catmanstudios.com
- *
- * @package AdThrive_WP_Adserver
- * @version 0.0.0
- *
- * Built using generator-plugin-wp (https://github.com/WebDevStudios/generator-plugin-wp)
- */
-
-/**
- * Copyright (c) 2019 Bryan Headrick (email : info@catmanstudios.com)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2 or, at
- * your discretion, any later version, as published by the Free
- * Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
-
-
-/**
- * Autoloads files with classes when needed.
- *
- * @since  0.0.0
- * @param  string $class_name Name of the class being requested.
- */
-function adthrive_wp_adserver_autoload_classes( $class_name ) {
-
-	// If our class doesn't have our prefix, don't load it.
-	if ( 0 !== strpos( $class_name, 'ATWPA_' ) ) {
-		return;
-	}
-
-	// Set up our filename.
-	$filename = strtolower( str_replace( '_', '-', substr( $class_name, strlen( 'ATWPA_' ) ) ) );
-
-	// Include our file.
-	AdThrive_WP_Adserver::include_file( 'includes/class-' . $filename );
-}
-spl_autoload_register( 'adthrive_wp_adserver_autoload_classes' );
-
-/**
- * Main initiation class.
- *
- * @since  0.0.0
- */
-final class AdThrive_WP_Adserver {
-
 	/**
-	 * Current version.
+	 * Plugin Name: AdThrive WP Adserver
+	 * Plugin URI:  https://catmanstudios.com
+	 * Description: A go-to solution fo rserving ads in WordPress
+	 * Version:     1.0.0
+	 * Author:      Bryan Headrick
+	 * Author URI:  https://catmanstudios.com
+	 * Donate link: https://catmanstudios.com
+	 * License:     GPLv2
+	 * Text Domain: adthrive-wp-adserver
+	 * Domain Path: /languages
 	 *
-	 * @var    string
-	 * @since  0.0.0
-	 */
-	const VERSION = '0.0.0';
-
-	/**
-	 * URL of plugin directory.
+	 * @link    https://catmanstudios.com
 	 *
-	 * @var    string
-	 * @since  0.0.0
-	 */
-	protected $url = '';
-
-	/**
-	 * Path of plugin directory.
+	 * @package AdThrive_WP_Adserver
+	 * @version 0.0.0
 	 *
-	 * @var    string
-	 * @since  0.0.0
+	 * Built using generator-plugin-wp (https://github.com/WebDevStudios/generator-plugin-wp)
 	 */
-	protected $path = '';
 
 	/**
-	 * Plugin basename.
+	 * Copyright (c) 2019 Bryan Headrick (email : info@catmanstudios.com)
 	 *
-	 * @var    string
-	 * @since  0.0.0
-	 */
-	protected $basename = '';
-
-	/**
-	 * Detailed activation error messages.
+	 * This program is free software; you can redistribute it and/or modify
+	 * it under the terms of the GNU General Public License, version 2 or, at
+	 * your discretion, any later version, as published by the Free
+	 * Software Foundation.
 	 *
-	 * @var    array
-	 * @since  0.0.0
-	 */
-	protected $activation_errors = array();
-
-	/**
-	 * Singleton instance of plugin.
+	 * This program is distributed in the hope that it will be useful,
+	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	 * GNU General Public License for more details.
 	 *
-	 * @var    AdThrive_WP_Adserver
-	 * @since  0.0.0
+	 * You should have received a copy of the GNU General Public License
+	 * along with this program; if not, write to the Free Software
+	 * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	 */
-	protected static $single_instance = null;
+
 
 	/**
-	 * Instance of ATWPA_Frontend
-	 *
-	 * @since0.0.0
-	 * @var ATWPA_Frontend
-	 */
-	protected $frontend;
-
-	/**
-	 * Instance of ATWPA_Ad
-	 *
-	 * @since0.0.0
-	 * @var ATWPA_Ad
-	 */
-	protected $ad;
-
-	/**
-	 * Instance of ATWPA_Zone
-	 *
-	 * @since0.0.0
-	 * @var ATWPA_Zone
-	 */
-	protected $zone;
-
-	protected $slug;
-
-	/**
-	 * Instance of ATWPA_Shortcode
-	 *
-	 * @since0.0.0
-	 * @var ATWPA_Shortcode
-	 */
-	protected $shortcode;
-
-	/**
-	 * Creates or returns an instance of this class.
-	 *
-	 * @since   0.0.0
-	 * @return  AdThrive_WP_Adserver A single instance of this class.
-	 */
-	public static function get_instance() {
-		if ( null === self::$single_instance ) {
-			self::$single_instance = new self();
-		}
-
-		return self::$single_instance;
-	}
-
-	/**
-	 * Sets up our plugin.
+	 * Autoloads files with classes when needed.
 	 *
 	 * @since  0.0.0
-	 */
-	protected function __construct() {
-		$this->basename = plugin_basename( __FILE__ );
-		$this->url      = plugin_dir_url( __FILE__ );
-		$this->path     = plugin_dir_path( __FILE__ );
-		$this->slug = str_replace('_', '-', get_class($this));
-	}
-
-	/**
-	 * Attach other plugin classes to the base plugin class.
 	 *
-	 * @since  0.0.0
+	 * @param  string $class_name Name of the class being requested.
 	 */
-	public function plugin_classes() {
+	function adthrive_wp_adserver_autoload_classes( $class_name ) {
 
-		$this->frontend = new ATWPA_Frontend( $this );
-		$this->ad = new ATWPA_Ad( $this );
-		$this->zone = new ATWPA_Zone( $this );
-		$this->shortcode = new ATWPA_Shortcode( $this );
-	} // END OF PLUGIN CLASSES FUNCTION
-
-	/**
-	 * Add hooks and filters.
-	 * Priority needs to be
-	 * < 10 for CPT_Core,
-	 * < 5 for Taxonomy_Core,
-	 * and 0 for Widgets because widgets_init runs at init priority 1.
-	 *
-	 * @since  0.0.0
-	 */
-	public function hooks() {
-		add_action( 'init', array( $this, 'init' ), 0 );
-	}
-
-	/**
-	 * Activate the plugin.
-	 *
-	 * @since  0.0.0
-	 */
-	public function _activate() {
-		// Bail early if requirements aren't met.
-		if ( ! $this->check_requirements() ) {
+		// If our class doesn't have our prefix, don't load it.
+		if ( 0 !== strpos( $class_name, 'ATWPA_' ) ) {
 			return;
 		}
 
-		// Make sure any rewrite functionality has been loaded.
-		flush_rewrite_rules();
+		// Set up our filename.
+		$filename = strtolower( str_replace( '_', '-', substr( $class_name, strlen( 'ATWPA_' ) ) ) );
+
+		// Include our file.
+		AdThrive_WP_Adserver::include_file( 'includes/class-' . $filename );
 	}
 
+	spl_autoload_register( 'adthrive_wp_adserver_autoload_classes' );
+
 	/**
-	 * Deactivate the plugin.
-	 * Uninstall routines should be in uninstall.php.
+	 * Main initiation class.
 	 *
 	 * @since  0.0.0
 	 */
-	public function _deactivate() {
-		// Add deactivation cleanup functionality here.
-	}
+	final class AdThrive_WP_Adserver {
 
-	/**
-	 * Init hooks
-	 *
-	 * @since  0.0.0
-	 */
-	public function init() {
+		/**
+		 * Current version.
+		 *
+		 * @var    string
+		 * @since  0.0.0
+		 */
+		const VERSION = '0.0.0';
 
-		// Bail early if requirements aren't met.
-		if ( ! $this->check_requirements() ) {
-			return;
+		/**
+		 * URL of plugin directory.
+		 *
+		 * @var    string
+		 * @since  0.0.0
+		 */
+		protected $url = '';
+
+		/**
+		 * Path of plugin directory.
+		 *
+		 * @var    string
+		 * @since  0.0.0
+		 */
+		protected $path = '';
+
+		/**
+		 * Plugin basename.
+		 *
+		 * @var    string
+		 * @since  0.0.0
+		 */
+		protected $basename = '';
+
+		/**
+		 * Detailed activation error messages.
+		 *
+		 * @var    array
+		 * @since  0.0.0
+		 */
+		protected $activation_errors = array();
+
+		/**
+		 * Singleton instance of plugin.
+		 *
+		 * @var    AdThrive_WP_Adserver
+		 * @since  0.0.0
+		 */
+		protected static $single_instance = null;
+
+		/**
+		 * Instance of ATWPA_Frontend
+		 *
+		 * @since0.0.0
+		 * @var ATWPA_Frontend
+		 */
+		protected $frontend;
+
+		/**
+		 * Instance of ATWPA_Ad
+		 *
+		 * @since0.0.0
+		 * @var ATWPA_Ad
+		 */
+		protected $ad;
+
+		/**
+		 * Instance of ATWPA_Zone
+		 *
+		 * @since0.0.0
+		 * @var ATWPA_Zone
+		 */
+		protected $zone;
+
+		/**
+		 * @var string
+		 *
+		 * @since0.0.0
+		 */
+		protected $slug;
+
+		/**
+		 * Instance of ATWPA_Shortcode
+		 *
+		 * @since0.0.0
+		 * @var ATWPA_Shortcode
+		 */
+		protected $shortcode;
+
+		/**
+		 * Creates or returns an instance of this class.
+		 *
+		 * @since   0.0.0
+		 * @return  AdThrive_WP_Adserver A single instance of this class.
+		 */
+		public static function get_instance() {
+			if ( null === self::$single_instance ) {
+				self::$single_instance = new self();
+			}
+
+			return self::$single_instance;
 		}
 
-		// Load translated strings for plugin.
-		load_plugin_textdomain( 'adthrive-wp-adserver', false, dirname( $this->basename ) . '/languages/' );
+		/**
+		 * Sets up our plugin.
+		 *
+		 * @since  0.0.0
+		 */
+		protected function __construct() {
+			$this->basename = plugin_basename( __FILE__ );
+			$this->url      = plugin_dir_url( __FILE__ );
+			$this->path     = plugin_dir_path( __FILE__ );
+			$this->slug     = str_replace( '_', '-', get_class( $this ) );
+		}
 
-		// Initialize plugin classes.
-		$this->plugin_classes();
-	}
+		/**
+		 * Attach other plugin classes to the base plugin class.
+		 *
+		 * @since  0.0.0
+		 */
+		public function plugin_classes() {
 
-	/**
-	 * Check if the plugin meets requirements and
-	 * disable it if they are not present.
-	 *
-	 * @since  0.0.0
-	 *
-	 * @return boolean True if requirements met, false if not.
-	 */
-	public function check_requirements() {
+			$this->frontend  = new ATWPA_Frontend( $this );
+			$this->ad        = new ATWPA_Ad( $this );
+			$this->zone      = new ATWPA_Zone( $this );
+			$this->shortcode = new ATWPA_Shortcode( $this );
+		} // END OF PLUGIN CLASSES FUNCTION
 
-		// Bail early if plugin meets requirements.
-		if ( $this->meets_requirements() ) {
+		/**
+		 * Add hooks and filters.
+		 * Priority needs to be
+		 * < 10 for CPT_Core,
+		 * < 5 for Taxonomy_Core,
+		 * and 0 for Widgets because widgets_init runs at init priority 1.
+		 *
+		 * @since  0.0.0
+		 */
+		public function hooks() {
+			add_action( 'init', array( $this, 'init' ), 0 );
+		}
+
+		/**
+		 * Activate the plugin.
+		 *
+		 * @since  0.0.0
+		 */
+		public function _activate() {
+			// Bail early if requirements aren't met.
+			if ( ! $this->check_requirements() ) {
+				return;
+			}
+
+			// Make sure any rewrite functionality has been loaded.
+			flush_rewrite_rules();
+		}
+
+		/**
+		 * Deactivate the plugin.
+		 * Uninstall routines should be in uninstall.php.
+		 *
+		 * @since  0.0.0
+		 */
+		public function _deactivate() {
+			// Add deactivation cleanup functionality here.
+		}
+
+		/**
+		 * Init hooks
+		 *
+		 * @since  0.0.0
+		 */
+		public function init() {
+
+			// Bail early if requirements aren't met.
+			if ( ! $this->check_requirements() ) {
+				return;
+			}
+
+			// Load translated strings for plugin.
+			load_plugin_textdomain( 'adthrive-wp-adserver', false, dirname( $this->basename ) . '/languages/' );
+
+			// Initialize plugin classes.
+			$this->plugin_classes();
+		}
+
+		/**
+		 * Check if the plugin meets requirements and
+		 * disable it if they are not present.
+		 *
+		 * @since  0.0.0
+		 *
+		 * @return boolean True if requirements met, false if not.
+		 */
+		public function check_requirements() {
+
+			// Bail early if plugin meets requirements.
+			if ( $this->meets_requirements() ) {
+				return true;
+			}
+
+			// Add a dashboard notice.
+			add_action( 'all_admin_notices', array( $this, 'requirements_not_met_notice' ) );
+
+			// Deactivate our plugin.
+			add_action( 'admin_init', array( $this, 'deactivate_me' ) );
+
+			// Didn't meet the requirements.
+			return false;
+		}
+
+		/**
+		 * Deactivates this plugin, hook this function on admin_init.
+		 *
+		 * @since  0.0.0
+		 */
+		public function deactivate_me() {
+
+			// We do a check for deactivate_plugins before calling it, to protect
+			// any developers from accidentally calling it too early and breaking things.
+			if ( function_exists( 'deactivate_plugins' ) ) {
+				deactivate_plugins( $this->basename );
+			}
+		}
+
+		/**
+		 * Check that all plugin requirements are met.
+		 *
+		 * @since  0.0.0
+		 *
+		 * @return boolean True if requirements are met.
+		 */
+		public function meets_requirements() {
+
+			// Do checks for required classes / functions or similar.
+			// Add detailed messages to $this->activation_errors array.
 			return true;
 		}
 
-		// Add a dashboard notice.
-		add_action( 'all_admin_notices', array( $this, 'requirements_not_met_notice' ) );
+		/**
+		 * Adds a notice to the dashboard if the plugin requirements are not met.
+		 *
+		 * @since  0.0.0
+		 */
+		public function requirements_not_met_notice() {
 
-		// Deactivate our plugin.
-		add_action( 'admin_init', array( $this, 'deactivate_me' ) );
+			// Compile default message.
+			$default_message = sprintf( __( 'AdThrive WP Adserver is missing requirements and has been <a href="%s">deactivated</a>. Please make sure all requirements are available.', 'adthrive-wp-adserver' ), admin_url( 'plugins.php' ) );
 
-		// Didn't meet the requirements.
-		return false;
-	}
+			// Default details to null.
+			$details = null;
 
-	/**
-	 * Deactivates this plugin, hook this function on admin_init.
-	 *
-	 * @since  0.0.0
-	 */
-	public function deactivate_me() {
+			// Add details if any exist.
+			if ( $this->activation_errors && is_array( $this->activation_errors ) ) {
+				$details = '<small>' . implode( '</small><br /><small>', $this->activation_errors ) . '</small>';
+			}
 
-		// We do a check for deactivate_plugins before calling it, to protect
-		// any developers from accidentally calling it too early and breaking things.
-		if ( function_exists( 'deactivate_plugins' ) ) {
-			deactivate_plugins( $this->basename );
+			// Output errors.
+			?>
+            <div id="message" class="error">
+                <p><?php echo wp_kses_post( $default_message ); ?></p>
+				<?php echo wp_kses_post( $details ); ?>
+            </div>
+			<?php
+		}
+
+		/**
+		 * Magic getter for our object.
+		 *
+		 * @since  0.0.0
+		 *
+		 * @param  string $field Field to get.
+		 *
+		 * @throws Exception     Throws an exception if the field is invalid.
+		 * @return mixed         Value of the field.
+		 */
+		public function __get( $field ) {
+			switch ( $field ) {
+				case 'version':
+					return self::VERSION;
+				case 'basename':
+				case 'url':
+				case 'path':
+				case 'frontend':
+				case 'slug':
+				case 'ad':
+				case 'zone':
+				case 'shortcode':
+					return $this->$field;
+				default:
+					throw new Exception( 'Invalid ' . __CLASS__ . ' property: ' . $field );
+			}
+		}
+
+		/**
+		 * Include a file from the includes directory.
+		 *
+		 * @since  0.0.0
+		 *
+		 * @param  string $filename Name of the file to be included.
+		 *
+		 * @return boolean          Result of include call.
+		 */
+		public static function include_file( $filename ) {
+			$file = self::dir( $filename . '.php' );
+			if ( file_exists( $file ) ) {
+				return include_once $file;
+			}
+
+			return false;
+		}
+
+		/**
+		 * This plugin's directory.
+		 *
+		 * @since  0.0.0
+		 *
+		 * @param  string $path (optional) appended path.
+		 *
+		 * @return string       Directory and path.
+		 */
+		public static function dir( $path = '' ) {
+			static $dir;
+			$dir = $dir ? $dir : trailingslashit( dirname( __FILE__ ) );
+
+			return $dir . $path;
+		}
+
+		/**
+		 * This plugin's url.
+		 *
+		 * @since  0.0.0
+		 *
+		 * @param  string $path (optional) appended path.
+		 *
+		 * @return string       URL and path.
+		 */
+		public static function url( $path = '' ) {
+			static $url;
+			$url = $url ? $url : trailingslashit( plugin_dir_url( __FILE__ ) );
+
+			return $url . $path;
 		}
 	}
 
 	/**
-	 * Check that all plugin requirements are met.
+	 * Grab the AdThrive_WP_Adserver object and return it.
+	 * Wrapper for AdThrive_WP_Adserver::get_instance().
 	 *
 	 * @since  0.0.0
-	 *
-	 * @return boolean True if requirements are met.
+	 * @return AdThrive_WP_Adserver  Singleton instance of plugin class.
 	 */
-	public function meets_requirements() {
-
-		// Do checks for required classes / functions or similar.
-		// Add detailed messages to $this->activation_errors array.
-		return true;
+	function adthrive_wp_adserver() {
+		return AdThrive_WP_Adserver::get_instance();
 	}
-
-	/**
-	 * Adds a notice to the dashboard if the plugin requirements are not met.
-	 *
-	 * @since  0.0.0
-	 */
-	public function requirements_not_met_notice() {
-
-		// Compile default message.
-		$default_message = sprintf( __( 'AdThrive WP Adserver is missing requirements and has been <a href="%s">deactivated</a>. Please make sure all requirements are available.', 'adthrive-wp-adserver' ), admin_url( 'plugins.php' ) );
-
-		// Default details to null.
-		$details = null;
-
-		// Add details if any exist.
-		if ( $this->activation_errors && is_array( $this->activation_errors ) ) {
-			$details = '<small>' . implode( '</small><br /><small>', $this->activation_errors ) . '</small>';
-		}
-
-		// Output errors.
-		?>
-		<div id="message" class="error">
-			<p><?php echo wp_kses_post( $default_message ); ?></p>
-			<?php echo wp_kses_post( $details ); ?>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Magic getter for our object.
-	 *
-	 * @since  0.0.0
-	 *
-	 * @param  string $field Field to get.
-	 * @throws Exception     Throws an exception if the field is invalid.
-	 * @return mixed         Value of the field.
-	 */
-	public function __get( $field ) {
-		switch ( $field ) {
-			case 'version':
-				return self::VERSION;
-			case 'basename':
-			case 'url':
-			case 'path':
-			case 'frontend':
-			case 'slug':
-			case 'ad':
-			case 'zone':
-			case 'shortcode':
-				return $this->$field;
-			default:
-				throw new Exception( 'Invalid ' . __CLASS__ . ' property: ' . $field );
-		}
-	}
-
-	/**
-	 * Include a file from the includes directory.
-	 *
-	 * @since  0.0.0
-	 *
-	 * @param  string $filename Name of the file to be included.
-	 * @return boolean          Result of include call.
-	 */
-	public static function include_file( $filename ) {
-		$file = self::dir( $filename . '.php' );
-		if ( file_exists( $file ) ) {
-			return include_once( $file );
-		}
-		return false;
-	}
-
-	/**
-	 * This plugin's directory.
-	 *
-	 * @since  0.0.0
-	 *
-	 * @param  string $path (optional) appended path.
-	 * @return string       Directory and path.
-	 */
-	public static function dir( $path = '' ) {
-		static $dir;
-		$dir = $dir ? $dir : trailingslashit( dirname( __FILE__ ) );
-		return $dir . $path;
-	}
-
-	/**
-	 * This plugin's url.
-	 *
-	 * @since  0.0.0
-	 *
-	 * @param  string $path (optional) appended path.
-	 * @return string       URL and path.
-	 */
-	public static function url( $path = '' ) {
-		static $url;
-		$url = $url ? $url : trailingslashit( plugin_dir_url( __FILE__ ) );
-		return $url . $path;
-	}
-}
-
-/**
- * Grab the AdThrive_WP_Adserver object and return it.
- * Wrapper for AdThrive_WP_Adserver::get_instance().
- *
- * @since  0.0.0
- * @return AdThrive_WP_Adserver  Singleton instance of plugin class.
- */
-function adthrive_wp_adserver() {
-	return AdThrive_WP_Adserver::get_instance();
-}
 
 // Kick it off.
-add_action( 'plugins_loaded', array( adthrive_wp_adserver(), 'hooks' ) );
+	add_action( 'plugins_loaded', array( adthrive_wp_adserver(), 'hooks' ) );
 
 // Activation and deactivation.
-register_activation_hook( __FILE__, array( adthrive_wp_adserver(), '_activate' ) );
-register_deactivation_hook( __FILE__, array( adthrive_wp_adserver(), '_deactivate' ) );
+	register_activation_hook( __FILE__, array( adthrive_wp_adserver(), '_activate' ) );
+	register_deactivation_hook( __FILE__, array( adthrive_wp_adserver(), '_deactivate' ) );

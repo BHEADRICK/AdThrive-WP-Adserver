@@ -6,13 +6,14 @@
  * @package AdThrive_WP_Adserver
  */
 
-/**
- * Endpoint class.
- *
- * @since   0.0.0
- * @package AdThrive_WP_Adserver
- */
+
 if ( class_exists( 'WP_REST_Controller' ) ) {
+	/**
+	 * Endpoint class.
+	 *
+	 * @since   0.0.0
+	 * @package AdThrive_WP_Adserver
+	 */
 	class ATWPA_Frontend extends WP_REST_Controller {
 		/**
 		 * Parent plugin class.
@@ -129,6 +130,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		public function get_item( $request ) {
 			$zone_id = $request->get_param('id');
+			$zone_size = $request->get_param('size');
 			$ads = get_posts([
 				'posts_per_page'=>1,
 				'post_type'=>'atwpa-ad',
@@ -143,10 +145,17 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if(count($ads) > 0){
 				$ad = $ads[0];
 
+				if(empty($zone_size)){
+					$size = get_post_meta($ad->ID, '_atwpa_image_size', true);
+				}else{
+					$size = $zone_size;
+				}
+
+
 				return [
 					'title'=>$ad->post_title,
 					'url'=>get_post_meta($ad->ID, '_atwpa_ad_url', true),
-					'image'=>get_the_post_thumbnail_url($ad->ID)
+					'image'=>get_the_post_thumbnail_url($ad->ID, $size?$size:'full')
 				];
 
 			}
