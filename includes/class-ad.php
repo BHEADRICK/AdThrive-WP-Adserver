@@ -132,13 +132,21 @@ class ATWPA_Ad extends CPT_Core {
 	public function field_html($post){
 		wp_nonce_field( '_ad_url_nonce', 'ad_url_nonce' ); ?>
 
-		<p>
-			<label for="ad_url_ad_url"><?php _e( 'Ad URL', $this->plugin->slug ); ?></label><br>
-			<input type="text" name="atwpa_ad_url" id="ad_url_ad_url" value="<?php echo get_post_meta($post->ID, '_atwpa_ad_url', true); ?>">
-		</p>
+		<?php
+		if(!has_post_thumbnail($post)){
+			echo '<p><strong style="color:maroon;">Please add a featured image.</strong></p>';
+		}
+		?>
 
-		<p>Select the image size.</p>
-		<p>
+        <p>
+            <label for="ad_url_ad_url"><?php _e( 'Ad URL', $this->plugin->slug ); ?></label><br>
+            <input type="text" name="atwpa_ad_url" id="ad_url_ad_url" value="<?php echo get_post_meta($post->ID, '_atwpa_ad_url', true); ?>">
+			<?php
+				if(!wp_http_validate_url(get_post_meta($post->ID, '_atwpa_ad_url', true) ) ){
+					echo '<span><strong style="color:maroon;">Please add a valid url.</strong></span>';
+				}
+			?>
+        </p>
 		<?php 
 			$atwpa_image_sizes = get_intermediate_image_sizes();
 		?>
