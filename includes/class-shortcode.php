@@ -39,7 +39,7 @@ class ATWPA_Shortcode {
 	 * @since  0.0.0
 	 */
 	public function hooks() {
-		add_shortcode('adthrive_zone', [$this, 'shortcode']);
+		add_shortcode('which ', [$this, 'shortcode']);
 		add_action('wp_enqueue_scripts', [$this, 'scripts']);
 	}
 
