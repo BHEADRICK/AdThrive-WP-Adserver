@@ -48,11 +48,11 @@ class ATWPA_Zone extends Taxonomy_Core {
 			),
 			// Register taxonomy arguments.
 			array(
-				'hierarchical' => false,
+				'hierarchical' => true,
 			),
 			// Post types to attach to.
 			array(
-				'post',
+				'atwpa-ad',
 			)
 		);
 	}
